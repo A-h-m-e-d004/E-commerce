@@ -106,9 +106,7 @@ curl -X POST http://localhost:8080/api/auth/register \
     "password": "password123"
   }'
 
-Copy
 
-Insert at cursor
 bash
 Login
 curl -X POST http://localhost:8080/api/auth/login \
@@ -118,17 +116,13 @@ curl -X POST http://localhost:8080/api/auth/login \
     "password": "password123"
   }'
 
-Copy
 
-Insert at cursor
 bash
 Using JWT Token
 curl -X GET http://localhost:8080/api/users \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
 
-Copy
 
-Insert at cursor
 bash
 Default Admin Account
 Username: admin
