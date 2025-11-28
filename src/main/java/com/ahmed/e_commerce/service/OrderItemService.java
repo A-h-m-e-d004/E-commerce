@@ -2,6 +2,7 @@ package com.ahmed.e_commerce.service;
 
 import com.ahmed.e_commerce.Dto.OrderItemDto;
 import com.ahmed.e_commerce.Dto.OrderItemResponseDto;
+import com.ahmed.e_commerce.Entity.OrderItem;
 import com.ahmed.e_commerce.Entity.Product;
 import com.ahmed.e_commerce.mapper.OrderItemMapper;
 import com.ahmed.e_commerce.repository.OrderItemRepository;
@@ -33,7 +34,39 @@ public class OrderItemService {
 		if(product.getQuantity() < orderItemDto.quantity()){
 			throw new RuntimeException("Not enough quantity");
 		}
+        int newQuantity = product.getQuantity() - orderItemDto.quantity();
+        product.setQuantity(newQuantity);
+        productRepository.save(product);
 		orderItemRepository.save(orderItemMapper.toOrderItem(orderItemDto));
+	}
+
+    public void updateOrderItemQuantity(Long cardId, Long productId, int quantity){
+		if(!orderItemRepository.existsById(cardId)){
+			throw new RuntimeException("Order item not found");
+		}
+        OrderItem oldOrderItem = orderItemRepository.findById(cardId).orElseThrow(() -> new RuntimeException("Order item not found"));
+		Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        if (quantity > product.getQuantity()) {
+            throw new RuntimeException("Not enough quantity");
+        }
+		int newQuantity = product.getQuantity() + oldOrderItem.getQuantity() - quantity;
+		if(newQuantity < 0){
+			throw new RuntimeException("Not enough quantity");
+		}
+		product.setQuantity(newQuantity);
+		productRepository.save(product);
+		orderItemRepository.findById(cardId).ifPresent(orderItem -> {
+			orderItem.setQuantity(quantity);
+			orderItem.calculateTotalPrice();
+			orderItemRepository.save(orderItem);
+		});
+	}
+
+    public void deleteOrderItem(Long cardId){
+		if(!orderItemRepository.existsById(cardId)){
+			throw new RuntimeException("Order item not found");
+		}
+		orderItemRepository.deleteById(cardId);
 	}
 
 	public List<OrderItemResponseDto> getAllOrderItems(Long orderId){

@@ -80,4 +80,10 @@ public class ProductService {
 	public List<ProductResponseDto> getProductsByCategoryId(Long categoryId){
 		return productRepository.findProductByCategoryId(categoryId).stream().map(productMapper::toProductResponseDto).toList();
 	}
+
+    public void updateProductQuantity(Long productId, int newQuantity) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new RuntimeException("Product not found"));
+        product.setQuantity(newQuantity);
+        productRepository.save(product);
+    }
 }

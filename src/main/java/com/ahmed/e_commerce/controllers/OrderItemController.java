@@ -25,6 +25,18 @@ public class OrderItemController {
 		return ResponseEntity.ok(orderItemDto);
 	}
 
+    @PutMapping("card/{cardId}/product/{productId}")
+	public ResponseEntity<OrderItemDto> updateOrderItem(@PathVariable Long cardId, @PathVariable Long productId, @RequestParam int quantity) {
+		orderItemService.updateOrderItemQuantity(cardId, productId, quantity);
+		return ResponseEntity.ok().build();
+	}
+
+    @DeleteMapping("/{cardId}")
+	public ResponseEntity<OrderItemDto> deleteOrderItem(@PathVariable Long cardId) {
+		orderItemService.deleteOrderItem(cardId);
+		return ResponseEntity.ok().build();
+	}
+
 	@GetMapping("/{orderId}")
 	public List<OrderItemResponseDto> getAllOrderItems(@PathVariable Long orderId){
 		return orderItemService.getAllOrderItems(orderId);

@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
+import java.math.BigDecimal;
+
 public record ProductDto(
 
 		@NotEmpty(message = "the title should not be empty")
@@ -13,7 +15,7 @@ public record ProductDto(
 		int quantity,
 
 		@Positive(message = "the price should not be empty")
-		int price,
+        BigDecimal price,
 
 		String description,
 

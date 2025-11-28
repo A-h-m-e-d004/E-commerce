@@ -51,4 +51,10 @@ public class ProductController {
 	public List<ProductResponseDto> getProductsByCategoryId(@PathVariable Long categoryId){
 		return productService.getProductsByCategoryId(categoryId);
 	}
+
+    @PutMapping("/{productId}/quantity/update")
+    public ResponseEntity<?> updateProductQuantity(@PathVariable Long productId, @RequestParam int newQuantity) {
+        productService.updateProductQuantity(productId, newQuantity);
+        return ResponseEntity.ok("Product quantity updated successfully");
+    }
 }

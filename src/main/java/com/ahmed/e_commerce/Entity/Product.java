@@ -2,6 +2,7 @@ package com.ahmed.e_commerce.Entity;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,7 +21,7 @@ public class Product {
 	private int quantity;
 
 	@Column(nullable = false)
-	private int price;
+	private BigDecimal price;
 
 	private String description;
 
@@ -31,10 +32,13 @@ public class Product {
 	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Image> images = new ArrayList<>();
+
 	public Product() {
 	}
 
-	public Product(String title, int quantity, int price, String description, Category category) {
+	public Product(String title, int quantity, BigDecimal price, String description, Category category) {
 		this.title = title;
 		this.quantity = quantity;
 		this.price = price;
@@ -66,11 +70,11 @@ public class Product {
 		this.quantity = quantity;
 	}
 
-	public int getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(int price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 
@@ -97,4 +101,12 @@ public class Product {
 	public void setOrderItems(List<OrderItem> orderItems) {
 		this.orderItems = orderItems;
 	}
+
+    public List<Image> getImages() {
+        return images;
+    }
+
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
 }

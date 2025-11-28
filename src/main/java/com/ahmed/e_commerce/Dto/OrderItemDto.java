@@ -15,9 +15,6 @@ public record OrderItemDto(
 		String productTitle,
 
 		@Positive(message = "the quantity should not be empty")
-		int quantity,
-
-		@NotNull(message = "the price should not be empty")
-		BigDecimal price
+		int quantity
 ) {
 }

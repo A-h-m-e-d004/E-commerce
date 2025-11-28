@@ -22,16 +22,16 @@ public class OrderItem {
 
 	private int quantity;
 
-	private BigDecimal price;
+	private BigDecimal totalPrice;
 
 	public OrderItem() {
 	}
 
-	public OrderItem(Order order, Product product, int quantity, BigDecimal price) {
+	public OrderItem(Order order, Product product, int quantity, BigDecimal totalPrice) {
 		this.order = order;
 		this.product = product;
 		this.quantity = quantity;
-		this.price = price;
+		this.totalPrice = totalPrice;
 	}
 
 	public Long getId() {
@@ -66,11 +66,15 @@ public class OrderItem {
 		this.quantity = quantity;
 	}
 
-	public BigDecimal getPrice() {
-		return price;
+	public BigDecimal getTotalPrice() {
+		return totalPrice;
 	}
 
-	public void setPrice(BigDecimal price) {
-		this.price = price;
+	public void setTotalPrice(BigDecimal totalPrice) {
+		this.totalPrice = totalPrice;
 	}
+
+    public void calculateTotalPrice() {
+		this.totalPrice = this.product.getPrice().multiply(BigDecimal.valueOf(this.quantity));
+    }
 }

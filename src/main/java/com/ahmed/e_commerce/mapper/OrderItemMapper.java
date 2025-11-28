@@ -23,12 +23,12 @@ public class OrderItemMapper {
 
 	public OrderItem toOrderItem(OrderItemDto orderItemDto){
 		OrderItem orderItem = new OrderItem();
-		orderItem.setPrice(orderItemDto.price());
 		orderItem.setQuantity(orderItemDto.quantity());
 		Order order = orderRepository.findById(orderItemDto.orderId()).orElseThrow(() -> new RuntimeException("Order not found"));
 		Product product = productRepository.findByTitle(orderItemDto.productTitle()).orElseThrow(() -> new RuntimeException("Product not found"));
 		orderItem.setOrder(order);
 		orderItem.setProduct(product);
+        orderItem.calculateTotalPrice();
 		return orderItem;
 	}
 
@@ -38,7 +38,7 @@ public class OrderItemMapper {
 				orderItem.getOrder().getId(),
 				orderItem.getProduct().getTitle(),
 				orderItem.getQuantity(),
-				orderItem.getPrice()
+				orderItem.getTotalPrice()
 		);
 	}
 }
