@@ -1,6 +1,6 @@
 # E-Commerce REST API
 
-A Spring Boot-based e-commerce REST API with JWT authentication, role-based authorization, and comprehensive product management features.
+A Spring Boot-based e-commerce REST API with JWT authentication, role-based authorization, and comprehensive product management features including image upload capabilities.
 
 ## Features
 
@@ -8,11 +8,13 @@ A Spring Boot-based e-commerce REST API with JWT authentication, role-based auth
 - JWT-based authentication
 - Role-based access control (USER/ADMIN)
 - Secure password encryption with BCrypt
+- Default admin account initialization
 
 ### Core Functionality
 - User management and registration
 - Product catalog with categories
-- Order and order item management
+- Image upload and management for products
+- Order and order item management (shopping cart)
 - Admin panel for user role management
 
 ### Security
@@ -30,146 +32,195 @@ A Spring Boot-based e-commerce REST API with JWT authentication, role-based auth
 - **Validation**: Bean Validation
 - **Build Tool**: Maven
 - **Java Version**: 21
-- ## Project Structure
-- src/main/java/com/ahmed/e_commerce/
-├── config/ # Security and JWT configuration
-├── controllers/ # REST API endpoints
-├── Dto/ # Data Transfer Objects
-├── Entity/ # JPA entities
-├── exceptions/ # Global exception handling
-├── mapper/ # Entity-DTO mappers
-├── repository/ # Data access layer
-└── service/ # Business logic layer
+
+## Project Structure
+
+```
+src/main/java/com/ahmed/e_commerce/
+├── config/              # Security and JWT configuration
+├── controllers/         # REST API endpoints
+├── Dto/                 # Data Transfer Objects
+├── Entity/              # JPA entities
+├── exceptions/          # Global exception handling
+├── mapper/              # Entity-DTO mappers
+├── repository/          # Data access layer
+└── service/             # Business logic layer
+```
 
 ## Database Setup
 
 1. Install PostgreSQL
 2. Create database:
-sql
+```sql
 CREATE DATABASE e-commerce_DB;
+```
+
+3. Configure `application.properties`:
+```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/e-commerce_DB
 spring.datasource.username=your_username
 spring.datasource.password=your_password
+spring.jpa.hibernate.ddl-auto=update
+```
 
 ## Installation & Running
 
-git clone <https://github.com/A-h-m-e-d004/E-commerce.git>
+```bash
+git clone https://github.com/A-h-m-e-d004/E-commerce.git
 cd e-commerce
+mvn clean install
+mvn spring-boot:run
+```
+
+The application will start on `http://localhost:8080`
 
 ## API Endpoints
-## Authentication
-POST /api/auth/register - Register new user
 
-POST /api/auth/login - User login
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - User login (returns JWT token)
 
-## Products
-GET /api/products - Get all products (public)
+### Products
+- `GET /api/products` - Get all products (public)
+- `GET /api/products/{id}` - Get product by ID (public)
+- `GET /api/products/category/{categoryId}` - Get products by category (public)
+- `POST /api/products` - Add new product (authenticated)
+- `PUT /api/products/{id}` - Update product (authenticated)
+- `DELETE /api/products/{id}` - Delete product (authenticated)
+- `PUT /api/products/{productId}/quantity/update` - Update product quantity (authenticated)
 
-GET /api/products/{id} - Get product by ID (public)
+### Categories
+- `GET /api/category/all` - Get all categories
+- `POST /api/category/create` - Create new category
 
-GET /api/products/category/{categoryId} - Get products by category (public)
+### Images
+- `POST /api/v1/images/image/upload` - Upload product images
+- `GET /api/v1/images/image/download/{imageId}` - Download single image
+- `GET /api/v1/images/image/downloadAll/{productId}` - Download all product images
+- `DELETE /api/v1/images/image/delete/{imageId}` - Delete image
 
-POST /api/products - Add new product (authenticated)
+### Orders (USER role required)
+- `POST /api/orders` - Create new order
 
-PUT /api/products/{id} - Update product (authenticated)
+### Order Items (Shopping Cart)
+- `POST /api/orderItem` - Add item to order
+- `GET /api/orderItem/{orderId}` - Get order items
+- `PUT /api/orderItem/card/{cardId}/product/{productId}` - Update order item quantity
+- `DELETE /api/orderItem/{cardId}` - Delete order item
 
-DELETE /api/products/{id} - Delete product (authenticated)
+### Users
+- `GET /api/users` - Get all users
+- `GET /api/users/{id}` - Get user by ID
+- `DELETE /api/users/{id}` - Delete user
 
-## Categories
-GET /api/category/all - Get all categories
+### Admin (ADMIN role required)
+- `POST /admin/user/{id}/role` - Update user role
 
-POST /api/category/create - Create new category
+## Usage Examples
 
-## Orders (USER role required)
-POST /api/orders - Create new order
-
-POST /api/orderItem - Add item to order
-
-GET /api/orderItem/{orderId} - Get order items
-
-## Users
-GET /api/users - Get all users
-
-GET /api/users/{id} - Get user by ID
-
-DELETE /api/users/{id} - Delete user
-
-## Admin (ADMIN role required)
-POST /admin/user/{id}/role - Update user role
-
-## Authentication
-Register User
+### Register User
+```bash
 curl -X POST http://localhost:8080/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "username": "testuser",
     "password": "password123"
   }'
+```
 
-
-bash
-Login
+### Login
+```bash
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{
     "username": "testuser",
     "password": "password123"
   }'
+```
 
-
-bash
-Using JWT Token
+### Using JWT Token
+```bash
 curl -X GET http://localhost:8080/api/users \
   -H "Authorization: Bearer YOUR_JWT_TOKEN"
+```
 
+### Upload Product Images
+```bash
+curl -X POST http://localhost:8080/api/v1/images/image/upload \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -F "productId=1" \
+  -F "files=@image1.jpg" \
+  -F "files=@image2.jpg"
+```
 
-bash
-Default Admin Account
-Username: admin
+## Default Admin Account
 
-Password: admin123
+- **Username**: `admin`
+- **Password**: `admin123`
+- **Role**: `ADMIN`
 
-Role: ADMIN
+## Data Models
 
-Data Models
-User: ID, username, password, role (USER/ADMIN)
+### User
+- ID (Long)
+- Username (String, unique)
+- Password (String, encrypted)
+- Role (USER/ADMIN)
+- Orders (List)
 
-Category: ID, title
+### Category
+- ID (Long)
+- Title (String)
+- Products (List)
 
-Product: ID, title, description, price, quantity, category
+### Product
+- ID (Long)
+- Title (String)
+- Description (String)
+- Price (BigDecimal)
+- Quantity (Integer)
+- Category (Category)
+- Images (List)
+- Order Items (List)
 
-Order: ID, user, order items
+### Image
+- ID (Long)
+- Image URL (String)
+- File Name (String)
+- File Type (String)
+- Image (Blob)
+- Product (Product)
 
-OrderItem: ID, order, product, quantity, price
+### Order
+- ID (Long)
+- User (User)
+- Order Items (List)
+
+### OrderItem
+- ID (Long)
+- Order (Order)
+- Product (Product)
+- Quantity (Integer)
+- Total Price (BigDecimal)
 
 ## Security Configuration
-Public endpoints: /api/auth/**, GET /api/products/**
 
-User endpoints: /api/orders/** (USER role)
-
-Admin endpoints: /api/admin/** (ADMIN role)
-
-All other endpoints require authentication
+- **Public endpoints**: `/api/auth/**`, `GET /api/products/**`
+- **User endpoints**: `/api/orders/**` (USER role)
+- **Admin endpoints**: `/api/admin/**` (ADMIN role)
+- All other endpoints require authentication
 
 ## Error Handling
+
 Global exception handling for:
+- Validation errors (400 Bad Request)
+- Business logic errors (400 Bad Request)
+- Runtime exceptions (400 Bad Request)
+- General exceptions (400 Bad Request)
 
-Validation errors (400 Bad Request)
 
-Business logic errors (400 Bad Request)
+## Contact
 
-Runtime exceptions (400 Bad Request)
+Ahmed - [GitHub](https://github.com/A-h-m-e-d004)
 
-General exceptions (400 Bad Request)
-
-## Contributing
-Fork the repository
-
-Create a feature branch
-
-Commit your changes
-
-Push to the branch
-
-Create a Pull Request
-
+Project Link: [https://github.com/A-h-m-e-d004/E-commerce](https://github.com/A-h-m-e-d004/E-commerce)
